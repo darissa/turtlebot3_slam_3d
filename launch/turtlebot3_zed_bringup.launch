@@ -19,7 +19,7 @@
     <arg name="frame_rate"   value="30"/>
     <arg name="publish_tf"   value="$(arg visual_odom)"/>
     <arg name="base_frame"   value="/base_footprint"/>
-    <arg name="imu_frame"    value="zed_imu_link"/> -->
+    <arg name="imu_frame"           value="zed_imu_link"/> -->
     <arg name="camera_name"         value="$(arg camera_name)" />
     <arg name="svo_file"            value="$(arg svo_file)" />
     <arg name="stream"              value="$(arg stream)" />
@@ -30,6 +30,6 @@
 
   </include>
 
-  <!--<node pkg="tf" type="static_transform_publisher" name="tf_transform"
-	args="0 0 0 0 0 0 /zed_camera_link /zed_camera_center 100"/>-->
+  <node pkg="tf" type="static_transform_publisher" name="tf_transform"
+	args="0 0 0.3 0 0 0 base_link zed_camera_center 100"/>
 </launch>

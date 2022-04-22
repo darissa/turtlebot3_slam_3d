@@ -1,23 +1,24 @@
 <launch>
   <arg name="rate"            default="1.0"/>
-  <arg name="bag_file"        default="$(find turtlebot3_slam_3d)/rtab_bag.bag"/>
+  <arg name="bag_file"        default="$(find turtlebot3_slam_3d)/subset2.bag"/>
   <arg name="publish_detection" default="false"/>
   <arg name="detection_db"    default="$(find turtlebot3_slam_3d)/scripts/detections_dbscan.db"/>
   <param name="/use_sim_time" value="true"/>
 
+  
+     <!-- RTABMAP -->
+  <include file="$(find turtlebot3_slam_3d)/launch/rtabmap.launch">
+    <arg name="rate" value="$(arg rate)"/>
+    <arg name="rviz" value="false"/>
+  </include>
+    
   <include file="$(find turtlebot3_slam_3d)/launch/play_bag.launch">
     <arg name="bag_file" value="$(arg bag_file)"/>
     <arg name="rate" value="$(arg rate)"/>
     <arg name="delay" value="30.0"/>
   </include>
 
-  <!-- RTABMAP -->
-  <include file="$(find turtlebot3_slam_3d)/launch/rtabmap.launch">
-    <arg name="rate" value="$(arg rate)"/>
-    <arg name="rviz" value="false"/>
-  </include>
-
-  <!-- DARKNET -->
+   <!-- DARKNET -->
   <group unless="$(arg publish_detection)">
     <include file="$(find turtlebot3_slam_3d)/launch/darknet.launch">
       <arg name="generate_point_cloud" value="true"/>
@@ -30,14 +31,12 @@
 
   <!-- DETECTION_PUBLISHER -->
   <group if="$(arg publish_detection)">
-    <node pkg="turtlebot3_slam_3d" type="detection_publisher.py" name="detection_publihser"
+    <node pkg="turtlebot3_slam_3d" type="detection_publisher.py" name="detection_publishser"
           args=" -i $(arg detection_db)" output="screen"/>
 
     <!-- RVIZ -->
     <node pkg="rviz" type="rviz" name="rviz"
 	  args="-d $(find turtlebot3_slam_3d)/config/yolo_markers.rviz" />
   </group>
-
-
 
 </launch>

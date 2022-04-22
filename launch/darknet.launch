@@ -1,6 +1,6 @@
 <launch>
   <arg name="use_zed"               default="true"   doc="Set to false when using Intel Realsense D435"/>  
-  <arg name="generate_point_cloud"  default="true"  doc="Generate point cloud from input_image and input_depth"/>
+  <arg name="generate_point_cloud"  default="false"  doc="Generate point cloud from input_image and input_depth"/>
   <arg name="darknet_config"        default="$(find turtlebot3_slam_3d)/config/darknet_config.yaml"/>
   <arg name="zed_node_name"        default="zed_node" />
 
@@ -11,7 +11,7 @@
   <arg name="input_image"             default="/$(arg zed_node_name)/left/image_rect_color" />
   <arg name="input_depth"             default="/$(arg zed_node_name)/depth/depth_registered" />
   <arg name="input_camera_info"       default="/$(arg zed_node_name)/left/camera_info" />
-  <arg name="point_cloud_topic"       default="/$(arg zed_node_name)/point_cloud/fused_cloud_registered" />
+  <arg name="point_cloud_topic"       default="/$(arg zed_node_name)/point_cloud/cloud_registered" />
 	<!-- ###### -->
   
   <!-- NODELET -->
@@ -20,7 +20,7 @@
 
   <!-- DETECTION -->
   <param name="/darknet_ros/subscribers/camera_reading/topic"      value="$(arg input_image)"/>
-  <param name="/darknet_ros/subscribers/camera_reading/queue_size" value="100"/>
+  <param name="/darknet_ros/subscribers/camera_reading/queue_size" value="600"/>
   
   <include file="$(find darknet_ros)/launch/darknet_ros.launch">
     <arg name="ros_config"                                         value="$(arg darknet_config)"/>
@@ -28,8 +28,7 @@
 
   <!-- POINT CLOUD -->
   <node if="$(arg generate_point_cloud)"
-	pkg="nodelet" type="nodelet" name="point_cloud_generator"
-  	args="load depth_image_proc/point_cloud_xyzrgb $(arg MANAGER)">
+	pkg="nodelet" type="nodelet" name="point_cloud_generator" args="load depth_image_proc/point_cloud_xyzrgb $(arg MANAGER)">
     <remap from="rgb/camera_info"             to="$(arg input_camera_info)"/>
     <remap from="rgb/image_rect_color"        to="$(arg input_image)"/>
     <remap from="depth_registered/image_rect" to="$(arg input_depth)"/>
